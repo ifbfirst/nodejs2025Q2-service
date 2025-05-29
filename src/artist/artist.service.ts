@@ -4,10 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { TrackService } from 'src/track/track.service';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly albumService: AlbumService,
+  ) {}
   private artists: Artist[] = [
     {
       id: uuidv4(),
@@ -43,7 +47,9 @@ export class ArtistService {
     }
 
     if (name) artist.name = name;
-    if (grammy !== undefined || null) artist.grammy = grammy;
+    if (grammy !== undefined && grammy !== null) {
+      artist.grammy = grammy;
+    }
 
     return artist;
   }
@@ -57,5 +63,6 @@ export class ArtistService {
     this.artists = this.artists.filter((a) => a.id !== id);
 
     this.trackService.updateArtistId(id);
+    this.albumService.updateArtistId(id);
   }
 }

@@ -35,7 +35,7 @@ export class TrackController {
 
     const track = this.trackService.getTrackById(id);
     if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
     }
 
     return track;
