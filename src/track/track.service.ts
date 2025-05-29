@@ -34,7 +34,6 @@ export class TrackService {
       duration,
     };
     this.tracks.push(track);
-    console.log('Созданный трек:', track);
     return track;
   }
 
@@ -45,7 +44,7 @@ export class TrackService {
     const track = this.tracks.find((t) => t.id === id);
 
     if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
     }
     if (name) track.name = name;
     if (artistId) track.artistId = artistId;
@@ -58,9 +57,15 @@ export class TrackService {
   deleteTrack(id: string) {
     const track = this.tracks.find((track) => track.id === id);
     if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
     }
 
     this.tracks = this.tracks.filter((t) => t.id !== id);
+  }
+
+  updateArtistId(artistId: string) {
+    this.tracks = this.tracks.map((track) =>
+      track.artistId === artistId ? { ...track, artistId: null } : track,
+    );
   }
 }
