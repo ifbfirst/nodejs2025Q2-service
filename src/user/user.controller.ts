@@ -8,6 +8,7 @@ import {
   Body,
   Delete,
   Put,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { validate as isUUID } from 'uuid';
@@ -53,18 +54,24 @@ export class UserController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   updateUserPassword(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    if (!updateUserDto.newPassword || !updateUserDto.oldPassword) {
-      throw new HttpException('Passwords are required', HttpStatus.BAD_REQUEST);
+    if (!isUUID(id)) {
+      throw new HttpException('Invalid user ID format', HttpStatus.BAD_REQUEST);
     }
 
-    return this.userService.updateUserPassword(id, updateUserDto.newPassword);
+    return this.userService.updateUserPassword(
+      id,
+      updateUserDto.newPassword,
+      updateUserDto.oldPassword,
+    );
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteUser(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid user ID format', HttpStatus.BAD_REQUEST);

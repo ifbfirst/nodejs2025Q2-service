@@ -22,6 +22,9 @@ export class UserService {
 
   getUserById(id: string) {
     const user = this.users.find((u) => u.id === id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
     return { ...user, password: undefined };
   }
 
@@ -35,12 +38,20 @@ export class UserService {
       updatedAt: Date.now(),
     };
     this.users.push(user);
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
-  updateUserPassword(id: string, newPassword: string) {
+  updateUserPassword(id: string, newPassword: string, oldPassword: string) {
     const user = this.users.find((user) => user.id === id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    if (oldPassword !== user.password) {
+      throw new HttpException(
+        'Passwords have to be equal',
+        HttpStatus.FORBIDDEN,
+      );
     }
     user.password = newPassword;
     user.version += 1;
@@ -49,6 +60,11 @@ export class UserService {
   }
 
   deleteUser(id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
+    const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.users = this.users.filter((u) => u.id !== id);
   }
 }
