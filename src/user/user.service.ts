@@ -38,8 +38,8 @@ export class UserService {
       updatedAt: Date.now(),
     };
     this.users.push(user);
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return this.users.map(({ password, ...rest }) => rest);
   }
 
   updateUserPassword(id: string, newPassword: string, oldPassword: string) {
