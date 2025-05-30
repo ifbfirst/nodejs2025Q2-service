@@ -1,27 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Scope } from '@nestjs/common';
 import { Track } from 'src/interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 
+let globalTracks: Track[] = [];
+
 @Injectable()
 export class TrackService {
-  private tracks: Track[] = [
-    {
-      id: uuidv4(),
-      name: 'Soul',
-      artistId: '1234',
-      albumId: '5678',
-      duration: 360,
-    },
-  ];
-
   getAllTracks() {
-    return this.tracks;
+    return globalTracks;
   }
 
   getTrackById(id: string) {
-    const track = this.tracks.find((t) => t.id === id);
+    const track = globalTracks.find((t) => t.id === id);
     return track;
   }
 
@@ -33,7 +25,8 @@ export class TrackService {
       albumId: albumId ?? null,
       duration,
     };
-    this.tracks.push(track);
+    globalTracks.push(track);
+
     return track;
   }
 
@@ -41,7 +34,7 @@ export class TrackService {
     id: string,
     { name, artistId, albumId, duration }: UpdateTrackDto,
   ) {
-    const track = this.tracks.find((t) => t.id === id);
+    const track = globalTracks.find((t) => t.id === id);
 
     if (!track) {
       throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
@@ -55,22 +48,22 @@ export class TrackService {
   }
 
   deleteTrack(id: string) {
-    const track = this.tracks.find((track) => track.id === id);
+    const track = globalTracks.find((track) => track.id === id);
     if (!track) {
       throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
     }
 
-    this.tracks = this.tracks.filter((t) => t.id !== id);
+    globalTracks = globalTracks.filter((t) => t.id !== id);
   }
 
   updateArtistId(artistId: string) {
-    this.tracks = this.tracks.map((track) =>
+    globalTracks = globalTracks.map((track) =>
       track.artistId === artistId ? { ...track, artistId: null } : track,
     );
   }
 
   updateAlbumId(albumId: string) {
-    this.tracks = this.tracks.map((track) =>
+    globalTracks = globalTracks.map((track) =>
       track.albumId === albumId ? { ...track, albumId: null } : track,
     );
   }

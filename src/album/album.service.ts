@@ -5,26 +5,19 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { TrackService } from 'src/track/track.service';
 
+let albums: Album[] = [];
+
 @Injectable()
 export class AlbumService {
   constructor(private readonly trackService: TrackService) {}
 
-  private albums: Album[] = [
-    {
-      id: uuidv4(),
-      name: 'first',
-      year: 1999,
-      artistId: '123',
-    },
-  ];
-
   getAllAlbums() {
-    return this.albums;
+    return albums;
   }
 
   getAlbumById(id: string) {
-    const track = this.albums.find((t) => t.id === id);
-    return track;
+    const album = albums.find((t) => t.id === id);
+    return album;
   }
 
   createAlbum({ name, artistId, year }: CreateAlbumDto) {
@@ -34,12 +27,12 @@ export class AlbumService {
       artistId: artistId ?? null,
       year: year,
     };
-    this.albums.push(album);
+    albums.push(album);
     return album;
   }
 
   updateAlbum(id: string, { name, artistId, year }: UpdateAlbumDto) {
-    const album = this.albums.find((a) => a.id === id);
+    const album = albums.find((a) => a.id === id);
 
     if (!album) {
       throw new HttpException('Album is not found', HttpStatus.NOT_FOUND);
@@ -52,18 +45,18 @@ export class AlbumService {
   }
 
   deleteAlbum(id: string) {
-    const album = this.albums.find((album) => album.id === id);
+    const album = albums.find((album) => album.id === id);
     if (!album) {
       throw new HttpException('Album is not found', HttpStatus.NOT_FOUND);
     }
 
-    this.albums = this.albums.filter((t) => t.id !== id);
+    albums = albums.filter((t) => t.id !== id);
 
     this.trackService.updateAlbumId(id);
   }
 
   updateArtistId(artistId: string) {
-    this.albums = this.albums.map((album) =>
+    albums = albums.map((album) =>
       album.artistId === artistId ? { ...album, artistIdId: null } : album,
     );
   }

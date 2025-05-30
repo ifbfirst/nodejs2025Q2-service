@@ -6,26 +6,21 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
 
+let artists: Artist[] = [];
+
 @Injectable()
 export class ArtistService {
   constructor(
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
   ) {}
-  private artists: Artist[] = [
-    {
-      id: uuidv4(),
-      name: 'Jule',
-      grammy: true,
-    },
-  ];
 
   getAllArtists() {
-    return this.artists;
+    return artists;
   }
 
   getArtistById(id: string) {
-    const artist = this.artists.find((a) => a.id === id);
+    const artist = artists.find((a) => a.id === id);
     return artist;
   }
 
@@ -35,12 +30,12 @@ export class ArtistService {
       name,
       grammy,
     };
-    this.artists.push(artist);
+    artists.push(artist);
     return artist;
   }
 
   updateArtist(id: string, { name, grammy }: UpdateArtistDto) {
-    const artist = this.artists.find((a) => a.id === id);
+    const artist = artists.find((a) => a.id === id);
 
     if (!artist) {
       throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
@@ -55,12 +50,12 @@ export class ArtistService {
   }
 
   deleteArtist(id: string) {
-    const artist = this.artists.find((artist) => artist.id === id);
+    const artist = artists.find((artist) => artist.id === id);
     if (!artist) {
       throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
     }
 
-    this.artists = this.artists.filter((a) => a.id !== id);
+    artists = artists.filter((a) => a.id !== id);
 
     this.trackService.updateArtistId(id);
     this.albumService.updateArtistId(id);
