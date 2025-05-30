@@ -56,8 +56,7 @@ export class ArtistService {
     }
 
     artists = artists.filter((a) => a.id !== id);
-
-    this.trackService.updateArtistId(id);
     this.albumService.updateArtistId(id);
+    this.trackService.updateArtistId(id);
   }
 }

@@ -57,7 +57,7 @@ export class AlbumService {
 
   updateArtistId(artistId: string) {
     albums = albums.map((album) =>
-      album.artistId === artistId ? { ...album, artistIdId: null } : album,
+      album.artistId === artistId ? { ...album, artistId: null } : album,
     );
   }
 }
