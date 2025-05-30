@@ -39,7 +39,8 @@ export class UserService {
     };
     this.users.push(user);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return this.users.map(({ password, ...rest }) => rest);
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   updateUserPassword(id: string, newPassword: string, oldPassword: string) {
