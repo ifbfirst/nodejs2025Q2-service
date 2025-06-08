@@ -1,62 +1,55 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Artist } from 'src/interfaces';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { TrackService } from 'src/track/track.service';
-import { AlbumService } from 'src/album/album.service';
-
-let artists: Artist[] = [];
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(
-    private readonly trackService: TrackService,
-    private readonly albumService: AlbumService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  getAllArtists() {
-    return artists;
+  async getAllArtists() {
+    return this.prisma.artist.findMany();
   }
 
-  getArtistById(id: string) {
-    const artist = artists.find((a) => a.id === id);
-    return artist;
-  }
-
-  createArtist({ name, grammy }: CreateArtistDto) {
-    const artist = {
-      id: uuidv4(),
-      name,
-      grammy,
-    };
-    artists.push(artist);
-    return artist;
-  }
-
-  updateArtist(id: string, { name, grammy }: UpdateArtistDto) {
-    const artist = artists.find((a) => a.id === id);
+  async getArtistById(id: string) {
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
 
     if (!artist) {
-      throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (name) artist.name = name;
-    if (grammy !== undefined && grammy !== null) {
-      artist.grammy = grammy;
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
 
     return artist;
   }
 
-  deleteArtist(id: string) {
-    const artist = artists.find((artist) => artist.id === id);
+  async createArtist({ name, grammy }: CreateArtistDto) {
+    return this.prisma.artist.create({
+      data: {
+        name,
+        grammy,
+      },
+    });
+  }
+
+  async updateArtist(id: string, { name, grammy }: UpdateArtistDto) {
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
+
     if (!artist) {
-      throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
 
-    artists = artists.filter((a) => a.id !== id);
-    this.albumService.updateArtistId(id);
-    this.trackService.updateArtistId(id);
+    return this.prisma.artist.update({
+      where: { id },
+      data: { name, grammy },
+    });
+  }
+
+  async deleteArtist(id: string) {
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
+
+    if (!artist) {
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.prisma.artist.delete({ where: { id } });
   }
 }

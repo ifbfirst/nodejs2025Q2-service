@@ -1,71 +1,107 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from 'src/interfaces';
-import { v4 as uuidv4 } from 'uuid';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [
-    {
-      id: uuidv4(),
-      login: 'admin',
-      password: '1234',
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
-  getAllUsers() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return this.users.map(({ password, ...rest }) => rest);
+  async getAllUsers() {
+    return await this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  getUserById(id: string) {
-    const user = this.users.find((u) => u.id === id);
+  async getUserById(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    return { ...user, password: undefined };
+    return user;
   }
 
-  createUser(login: string, password: string) {
-    const user = {
-      id: uuidv4(),
-      login: login,
-      password: password,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+  async createUser(login: string, password: string) {
+    await this.prisma.user.deleteMany({ where: { login } });
+
+    const user = await this.prisma.user.create({
+      data: { login, password, version: 1 },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return {
+      ...user,
+      createdAt: new Date(user.createdAt).getTime(),
+      updatedAt: new Date(user.updatedAt).getTime(),
     };
-    this.users.push(user);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
   }
 
-  updateUserPassword(id: string, newPassword: string, oldPassword: string) {
-    const user = this.users.find((user) => user.id === id);
+  async updateUserPassword(
+    id: string,
+    newPassword: string,
+    oldPassword: string,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+
     if (oldPassword !== user.password) {
-      throw new HttpException(
-        'Passwords have to be equal',
-        HttpStatus.FORBIDDEN,
-      );
+      throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
     }
-    user.password = newPassword;
-    user.version += 1;
-    user.updatedAt = Date.now();
-    return { ...user, password: undefined };
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: newPassword,
+        version: user.version + 1,
+      },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      ...updatedUser,
+      version: Number(updatedUser.version),
+      createdAt: new Date(updatedUser.createdAt).getTime(),
+      updatedAt: new Date(updatedUser.updatedAt).getTime(),
+    };
   }
 
-  deleteUser(id: string) {
-    const user = this.users.find((user) => user.id === id);
+  async deleteUser(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    this.users = this.users.filter((u) => u.id !== id);
+    await this.prisma.user.delete({ where: { id } });
   }
 }

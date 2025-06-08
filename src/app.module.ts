@@ -9,16 +9,8 @@ import { FavsModule } from './favs/favs.module';
 import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [
-    PrismaService,
-    UserModule,
-    TrackModule,
-    ArtistModule,
-    AlbumModule,
-    FavsModule,
-  ],
+  imports: [UserModule, TrackModule, ArtistModule, AlbumModule, FavsModule],
   controllers: [AppController],
-  providers: [AppService],
-  exports: [PrismaService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

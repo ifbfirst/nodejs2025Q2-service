@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,11 +7,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(uuid()) 
+  login     String   @unique
+  password  String
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Favs      Favs?
+}
 
 model Track {
-  id        String  @id @default(uuid())
-  name      String
-  artistId  String?
-  albumId   String?
-  duration  Int
+  id         String  @id @default(uuid())
+  name       String
+  artistId   String?
+  artist     Artist? @relation(fields: [artistId], references: [id])
+  albumId    String?
+  album      Album?  @relation(fields: [albumId], references: [id])
+  duration   Int
+  isFavorite Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  favs      Favs?
+}
+
+model Album {
+  id         String  @id @default(uuid())
+  name       String
+  artistId   String?
+  artist     Artist? @relation(fields: [artistId], references: [id])
+  year       Int
+  isFavorite Boolean @default(false)
+  tracks     Track[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  favs      Favs?
+}
+
+model Artist {
+  id         String  @id @default(uuid())
+  name       String
+  grammy     Boolean @default(false)
+  isFavorite Boolean @default(false)
+  albums     Album[]
+  tracks     Track[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  favs      Favs?
+}
+
+model Favs {
+  id         String  @id @default(uuid())
+  isFavorite Boolean @default(false)
+
+  userId String? @unique // Просто сохраняем ID
+  user   User?   @relation(fields: [userId], references: [id]) // Объявляем связь!
+
+  trackId String? @unique
+  track   Track?  @relation(fields: [trackId], references: [id])
+
+  albumId String? @unique
+  album   Album?  @relation(fields: [albumId], references: [id])
+
+  artistId String? @unique
+  artist   Artist? @relation(fields: [artistId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,18 +1,9 @@
-# Используем легковесный образ Node.js
 FROM node:22-alpine
-
-# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
-
-# Копируем package.json и устанавливаем зависимости
-COPY package.json ./
+COPY package.json package-lock.json ./
 RUN npm install
-
-# Копируем весь проект
+RUN apk add --no-cache postgresql-client
+COPY prisma/schema.prisma prisma/schema.prisma
 COPY . .
-
-# Запускаем приложение
 CMD ["npm", "run", "start"]
-
-# Открываем порт для приложения
 EXPOSE 4000

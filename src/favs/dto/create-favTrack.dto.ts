@@ -9,5 +9,5 @@ export class CreateAlbumDto {
 
   @IsOptional()
   @IsString()
-  artistId?: string;
+  artistId?: number;
 }

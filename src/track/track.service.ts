@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class TrackService {
@@ -13,18 +12,24 @@ export class TrackService {
   }
 
   async getTrackById(id: string) {
-    return await this.prisma.track.findUnique({
+    const track = await this.prisma.track.findUnique({
       where: { id },
     });
+
+    if (!track) {
+      throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
+    }
+    return track;
   }
 
   async createTrack({ name, artistId, albumId, duration }: CreateTrackDto) {
-    return await this.prisma.create({
-      id: uuidv4(),
-      name,
-      artistId: artistId ?? null,
-      albumId: albumId ?? null,
-      duration,
+    return await this.prisma.track.create({
+      data: {
+        name,
+        artistId: artistId ?? null,
+        albumId: albumId ?? null,
+        duration,
+      },
     });
   }
 
