@@ -71,7 +71,7 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 ## Running application from Docker
 
 ```
-docker-compose up --build
+docker-compose up --build -d
 ```
 
 ## Testing
