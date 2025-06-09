@@ -1,0 +1,42 @@
+services:
+  database:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U myuser -d mydatabase']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: my_app
+    restart: always
+    depends_on:
+      - database
+
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+    ports:
+      - '4000:4000'
+      - '5555:5555'
+    volumes:
+      - .:/app
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  pgdata:
