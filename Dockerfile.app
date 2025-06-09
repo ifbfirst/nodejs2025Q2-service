@@ -5,5 +5,6 @@ RUN npm install
 RUN apk add --no-cache postgresql-client
 COPY prisma/schema.prisma prisma/schema.prisma
 COPY . .
+RUN npx prisma generate
 CMD ["npm", "run", "start"]
 EXPOSE 4000

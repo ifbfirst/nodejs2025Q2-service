@@ -22,17 +22,17 @@ services:
     container_name: my_app
     restart: always
     depends_on:
-      - database
-
+      database:
+        condition: service_healthy
     env_file:
       - .env
     networks:
       - mynetwork
     ports:
       - '4000:4000'
-      - '5555:5555'
     volumes:
       - .:/app
+      - /app/node_modules
 
 networks:
   mynetwork:
