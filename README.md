@@ -74,6 +74,12 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 docker-compose up --build
 ```
 
+## For monitoring application logs while running
+
+```
+docker logs my_app --follow
+```
+
 ## Testing
 
 After application running open new terminal and enter:

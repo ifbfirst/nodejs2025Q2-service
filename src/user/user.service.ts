@@ -11,7 +11,7 @@ export class UserService {
   ) {}
 
   async getAllUsers() {
-    this.loggingService.logRequest('GET', '/users', {}, {});
+    this.loggingService.logRequest('GET', '/user', {}, {});
 
     const users = await this.prisma.user.findMany({
       select: {
@@ -27,7 +27,7 @@ export class UserService {
   }
 
   async getUserById(id: string) {
-    this.loggingService.logRequest('GET', `/users/${id}`, {}, {});
+    this.loggingService.logRequest('GET', `/user/${id}`, {}, {});
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -48,7 +48,7 @@ export class UserService {
   }
 
   async createUser(login: string, password: string) {
-    this.loggingService.logRequest('POST', '/users', {}, { login });
+    this.loggingService.logRequest('POST', '/user', {}, { login });
     await this.prisma.user.deleteMany({ where: { login } });
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
@@ -123,7 +123,7 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    this.loggingService.logRequest('DELETE', `/users/${id}`, {}, {});
+    this.loggingService.logRequest('DELETE', `/user/${id}`, {}, {});
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {

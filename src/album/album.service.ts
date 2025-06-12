@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { PrismaService } from '../prisma.service';
-import { LoggingService } from 'src/logging.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable()
 export class AlbumService {

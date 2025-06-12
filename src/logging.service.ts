@@ -5,6 +5,9 @@ class LoggingService {
   private readonly logger = new Logger(LoggingService.name);
 
   logRequest(method: string, url: string, query: any, body: any): void {
+    console.log(
+      `[${method}] Request to ${url}, Query: ${JSON.stringify(query)}, Body: ${JSON.stringify(body)}`,
+    );
     this.logger.log(
       `[${method}] Request to ${url}, Query: ${JSON.stringify(query)}, Body: ${JSON.stringify(body)}`,
     );

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { PrismaService } from '../prisma.service';
-import { LoggingService } from 'src/logging.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable()
 export class TrackService {

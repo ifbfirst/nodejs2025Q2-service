@@ -3,10 +3,11 @@ import { AlbumController } from './album.controller';
 import { AlbumService } from './album.service';
 import { TrackModule } from '../track/track.module';
 import { PrismaModule } from '../prisma.module';
+import { LoggingService } from '../logging.service';
 
 @Module({
   controllers: [AlbumController],
-  providers: [AlbumService],
+  providers: [AlbumService, LoggingService],
   imports: [TrackModule, PrismaModule],
   exports: [AlbumService],
 })

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { LoggingService } from 'src/logging.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable()
 export class FavsService {

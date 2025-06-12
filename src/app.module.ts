@@ -13,5 +13,6 @@ import { LoggingService } from './logging.service';
   imports: [UserModule, TrackModule, ArtistModule, AlbumModule, FavsModule],
   controllers: [AppController],
   providers: [AppService, PrismaService, LoggingService],
+  exports: [LoggingService],
 })
 export class AppModule {}
