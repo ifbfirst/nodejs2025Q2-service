@@ -8,11 +8,21 @@ import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
 import { PrismaService } from './prisma.service';
 import { LoggingService } from './logging.service';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule, TrackModule, ArtistModule, AlbumModule, FavsModule],
-  controllers: [AppController],
-  providers: [AppService, PrismaService, LoggingService],
+  imports: [
+    UserModule,
+    TrackModule,
+    ArtistModule,
+    AlbumModule,
+    FavsModule,
+    AuthModule,
+  ],
+  controllers: [AppController, AuthController],
+  providers: [AppService, PrismaService, LoggingService, AuthService],
   exports: [LoggingService],
 })
 export class AppModule {}

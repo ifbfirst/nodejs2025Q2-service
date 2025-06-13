@@ -6,9 +6,10 @@ import { ArtistService } from '../artist/artist.service';
 import { TrackService } from '../track/track.service';
 import { PrismaModule } from '../prisma.module';
 import { LoggingService } from '../logging.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [FavsController],
   providers: [
     FavsService,
