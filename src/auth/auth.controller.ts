@@ -46,7 +46,14 @@ export class AuthController {
 
     try {
       const user = await this.prisma.user.create({
-        data: { login, password: hashedPassword },
+        data: { login, password: hashedPassword, version: 1 },
+        select: {
+          id: true,
+          login: true,
+          version: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
       const accessToken = this.authService.generateAccessToken(
@@ -59,8 +66,11 @@ export class AuthController {
       );
 
       return {
-        statusCode: 201,
-        message: 'User created',
+        id: user.id,
+        login: user.login,
+        version: user.version,
+        createdAt: new Date(user.createdAt).getTime(),
+        updatedAt: new Date(user.updatedAt).getTime(),
         accessToken,
         refreshToken,
       };

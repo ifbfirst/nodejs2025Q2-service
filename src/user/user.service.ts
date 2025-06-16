@@ -114,12 +114,8 @@ export class UserService {
       },
     });
     this.loggingService.logResponse(200, updatedUser);
-    return {
-      ...updatedUser,
-      version: Number(updatedUser.version),
-      createdAt: new Date(updatedUser.createdAt).getTime(),
-      updatedAt: new Date(updatedUser.updatedAt).getTime(),
-    };
+
+    return updatedUser;
   }
 
   async deleteUser(id: string) {
