@@ -5,10 +5,18 @@ import { AlbumService } from '../album/album.service';
 import { ArtistService } from '../artist/artist.service';
 import { TrackService } from '../track/track.service';
 import { PrismaModule } from '../prisma.module';
+import { LoggingService } from '../logging.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [FavsController],
-  providers: [FavsService, AlbumService, ArtistService, TrackService],
+  providers: [
+    FavsService,
+    AlbumService,
+    ArtistService,
+    TrackService,
+    LoggingService,
+  ],
 })
 export class FavsModule {}

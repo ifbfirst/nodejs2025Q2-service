@@ -1,11 +1,13 @@
 services:
   database:
-    image: postgres:latest
+    image: postgres:alpine
     container_name: postgres_db
     restart: always
     env_file:
       - .env
     volumes:
+      - .:/app
+      - /app/logs
       - pgdata:/var/lib/postgresql/data
     networks:
       - mynetwork
